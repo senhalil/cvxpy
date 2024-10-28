@@ -38,21 +38,25 @@ class Constraint(u.Canonical):
         A unique id for the constraint.
     """
 
-    def __init__(self, args, constr_id=None) -> None:
+    def __init__(self, args, name:str | None = None, constr_id=None) -> None:
         # TODO cast constants.
         # self.args = [cvxtypes.expression().cast_to_const(arg) for arg in args]
         self.args = args
+        self._name = name
         if constr_id is None:
             self.constr_id = lu.get_id()
         else:
             self.constr_id = constr_id
         self._construct_dual_variables(args)
         super(Constraint, self).__init__()
+    
+    def name(self):
+        return self._name
 
     def __str__(self):
         """Returns a string showing the mathematical constraint.
         """
-        return self.name()
+        return super().name()
 
     def __repr__(self) -> str:
         """Returns a string with information about the constraint.
