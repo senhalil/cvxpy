@@ -214,6 +214,11 @@ class HIGHS(ConicSolver):
         solver.passOptions(options)
         solver.passModel(model)
 
+        # HIGHS do not respect write_model_file and write_model_to_file parameters
+        # This is a temporary workaround until the issue is fixed in HIGHS
+        if solver_opts["write_model_file"] is not None:
+            solver.writeModel(solver_opts["write_model_file"])
+
         # initialize and solve problem
         try:
             solver.run()
