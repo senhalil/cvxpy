@@ -2180,6 +2180,48 @@ class TestHIGHS:
         }
         problem(solver=cp.HIGHS, highs_options=highs_options)
 
+    @pytest.mark.parametrize(
+        "problem",
+        # it is enough to validate the options with one problem from each type
+        [StandardTestLPs.test_lp_0, StandardTestLPs.test_mi_lp_0],
+    )
+    def test_highs_writes_model(self, problem, tmp_path_factory) -> None:
+        tmp_file_path = tmp_path_factory.mktemp("highs_writes_model") / "model.lp"
+
+        assert not tmp_file_path.exists()
+
+        problem(
+            solver=cp.HIGHS,
+            time_limit=0,
+            write_model_file=str(tmp_file_path),
+        )
+
+        assert tmp_file_path.exists()
+        assert tmp_file_path.is_file()
+        with tmp_file_path.open() as f:
+            assert f.readline() == "\\ File written by HiGHS .lp file handler\n"
+
+    @pytest.mark.parametrize(
+        "problem",
+        # it is enough to validate the options with one problem from each type
+        [StandardTestLPs.test_lp_0, StandardTestLPs.test_mi_lp_0],
+    )
+    def test_highs_options_writes_model(self, problem, tmp_path_factory) -> None:
+        tmp_file_path = tmp_path_factory.mktemp("highs_options_writes_model") / "model.mps"
+
+        assert not tmp_file_path.exists()
+
+        problem(
+            solver=cp.HIGHS,
+            time_limit=0,
+            highs_options=dict(write_model_file=str(tmp_file_path)),
+        )
+
+        assert tmp_file_path.exists()
+        assert tmp_file_path.is_file()
+        with tmp_file_path.open() as f:
+            assert f.readline() == "NAME        \n"
+
 
 class TestAllSolvers(BaseTest):
     def setUp(self) -> None:

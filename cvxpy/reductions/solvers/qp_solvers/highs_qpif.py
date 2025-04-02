@@ -203,6 +203,11 @@ class HIGHS(QpSolver):
 
         # initialize and solve problem
         try:
+            # Current HiGHS version do not respect write_model_file and write_model_to_file parameters
+            # expects writeModel function to be called directly by the user
+            if solver_opts.get("write_model_to_file", True) and solver_opts.get("write_model_file"):
+                solver.writeModel(solver_opts["write_model_file"])
+
             solver.run()
             results = {
                 "solution": solver.getSolution(),
